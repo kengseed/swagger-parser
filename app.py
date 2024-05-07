@@ -3,6 +3,7 @@ import base64
 import pandas as pd
 import streamlit as st
 from swagger_parser import process_swagger_file
+import traceback
 
 
 def get_download_link(file_path):
@@ -62,3 +63,4 @@ if uploaded_file is not None:
         display_dataframe(output_file)
     except Exception as e:
         st.error(f"Error processing file: {e}")
+        traceback.print_exc() 

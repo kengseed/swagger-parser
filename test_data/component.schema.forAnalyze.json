@@ -1,0 +1,998 @@
+{
+	"CreateCustomer": {
+		"required": [
+			"commonDemographics"
+		],
+		"type": "object",
+		"properties": {
+			"customerId": {
+				"type": "string",
+				"description": "The unique customer identifier.",
+				"readOnly": true,
+				"example": "70000000000"
+			},
+			"commonDemographics": {
+				"$ref": "#/components/schemas/CommonDemographicsInfo"
+			},
+			"individualDemographics": {
+				"$ref": "#/components/schemas/IndividualDemographicsInfo"
+			},
+			"organizationDemographics": {
+				"$ref": "#/components/schemas/OrganizationDemographicsDetails"
+			}
+		},
+		"description": "The customer"
+	},
+	"CommonDemographicsInfo": {
+		"required": [
+			"customerType"
+		],
+		"type": "object",
+		"properties": {
+			"customerStatus": {
+				"type": "string",
+				"description": "The state of the customer",
+				"example": "Open",
+				"enum": [
+					"Open",
+					"Closed"
+				]
+			},
+			"customerType": {
+				"$ref": "#/components/schemas/CustomerTypeEnum"
+			},
+			"externalIdentifier": {
+				"$ref": "#/components/schemas/ExternalIdentifierInfo"
+			},
+			"openDate": {
+				"type": "string",
+				"description": "Date the customer record was opened.",
+				"format": "date",
+				"example": "2020-01-01"
+			},
+			"closeDate": {
+				"type": "string",
+				"description": "Date the customer record was closed.",
+				"format": "date",
+				"example": "2020-01-01"
+			},
+			"ownRentCode": {
+				"type": "string",
+				"description": "Indicates whether the customer's principal residence ownership or rental.",
+				"example": "Own"
+			},
+			"ownRentCodeDescription": {
+				"type": "string",
+				"description": "Description of the customer's residence ownership or rental",
+				"readOnly": true,
+				"example": "Own"
+			},
+			"regionCode": {
+				"type": "string",
+				"description": "Identifies the designated region.",
+				"example": "Domestic"
+			},
+			"regionCodeDescription": {
+				"type": "string",
+				"description": "Description of the designated region",
+				"readOnly": true,
+				"example": "Domestic Text"
+			},
+			"basedInCountry": {
+				"$ref": "#/components/schemas/BasedInCountryInfo"
+			},
+			"customerSegmentInfomation": {
+				"$ref": "#/components/schemas/CustomerSegmentInfo"
+			},
+			"customerRoles": {
+				"type": "array",
+				"items": {
+					"$ref": "#/components/schemas/CustomerRoleInfo"
+				}
+			},
+			"names": {
+				"type": "array",
+				"items": {
+					"$ref": "#/components/schemas/Name"
+				}
+			},
+			"contactInfo": {
+				"$ref": "#/components/schemas/ContactInfo"
+			},
+			"officers": {
+				"type": "array",
+				"description": "Contains customer officer information.",
+				"items": {
+					"$ref": "#/components/schemas/OfficerInfo"
+				}
+			},
+			"branches": {
+				"type": "array",
+				"description": "Contains customer branch information",
+				"items": {
+					"$ref": "#/components/schemas/BranchInfo"
+				}
+			}
+		},
+		"description": "Defines the demographic fields that relate to any type of customer."
+	},
+	"ExternalIdentifierInfo": {
+		"required": [
+			"applicationName",
+			"externalId",
+			"processorName"
+		],
+		"type": "object",
+		"properties": {
+			"externalId": {
+				"type": "string",
+				"description": "External identifier of the customer",
+				"example": "999900138067059"
+			},
+			"processorName": {
+				"type": "string",
+				"description": "The processor name of the external system",
+				"example": "External"
+			},
+			"applicationName": {
+				"type": "string",
+				"description": "The application name of the external system",
+				"example": "External"
+			}
+		},
+		"description": "Defines external identification of the customer"
+	},
+	"IdentificationInfo": {
+		"required": [
+			"issueIdValue",
+			"issuedBy",
+			"issuedDate",
+			"issuedIdType"
+		],
+		"type": "object",
+		"properties": {
+			"issuedIdType": {
+				"type": "string",
+				"description": "Documentary Id type",
+				"example": "Driver's License"
+			},
+			"issueIdTypeDescription": {
+				"type": "string",
+				"description": "Documentary Id type description",
+				"readOnly": true,
+				"example": "Driver's License"
+			},
+			"issueIdValue": {
+				"type": "string",
+				"description": "Documentary ID Value",
+				"example": "DL556677"
+			},
+			"issuedDate": {
+				"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+				"type": "string",
+				"description": "The date the Id was issued",
+				"format": "date",
+				"example": "2020-01-01"
+			},
+			"issuedBy": {
+				"type": "string",
+				"description": "The Id issuing authority name",
+				"example": "New York"
+			},
+			"issuedByDescription": {
+				"type": "string",
+				"description": "Information describing the issuing authority",
+				"example": "Driver's license Bureau"
+			},
+			"expirationDate": {
+				"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+				"type": "string",
+				"description": "Expiry date of the customer identification",
+				"format": "date",
+				"example": "2030-01-01"
+			},
+			"verificationStatus": {
+				"type": "string",
+				"description": "Specifies if/how the issued Id was verified",
+				"example": "Verified"
+			},
+			"verificationStatusDate": {
+				"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+				"type": "string",
+				"description": "The date the issed Id was verified",
+				"format": "date",
+				"example": "2020-02-01"
+			}
+		},
+		"description": "Defines complete set of Documentary Id of the customer"
+	},
+	"CustomerTypeEnum": {
+		"type": "string",
+		"description": "The type of customer (Individual, Organization)",
+		"example": "Individual",
+		"enum": [
+			"Individual",
+			"Organization"
+		]
+	},
+	"BasedInCountryInfo": {
+		"required": [
+			"basedInCountryCode"
+		],
+		"type": "object",
+		"properties": {
+			"basedInCountryCode": {
+				"minLength": 1,
+				"type": "string",
+				"description": "Contains the country code associated to the involved party's residence.",
+				"example": "USA"
+			},
+			"basedInCountryName": {
+				"type": "string",
+				"description": "Contains the country name associated to the involved party's residence",
+				"readOnly": true,
+				"example": "United States Of America"
+			}
+		}
+	},
+	"IndividualDemographicsInfo": {
+		"type": "object",
+		"properties": {
+			"birthDate": {
+				"type": "string",
+				"description": "Date of birth of the customer",
+				"format": "date",
+				"example": "1975-01-01"
+			},
+			"deathDate": {
+				"type": "string",
+				"description": "The date that the individual was deceased.",
+				"format": "date",
+				"example": "9999-01-01"
+			},
+			"gender": {
+				"type": "string",
+				"description": "The gender of the individual customer.",
+				"example": "Female",
+				"enum": [
+					"Male",
+					"Female",
+					"Unknown"
+				]
+			},
+			"ethnicity": {
+				"type": "string",
+				"description": "The individual's ethnic heritage.",
+				"example": "Other"
+			},
+			"maritalStatus": {
+				"type": "string",
+				"description": "The marital status of the individual customer.",
+				"example": "Single",
+				"enum": [
+					"Divorced",
+					"Married",
+					"Separated",
+					"Single",
+					"Widow",
+					"Other"
+				]
+			},
+			"educationLevel": {
+				"type": "string",
+				"description": "Furthest education level completed. (E.g. High School, Associate Degree, College Degree, Masters, PhD, 8th Grade, 12th Grade, etc.)",
+				"example": "High School"
+			},
+			"numberDependents": {
+				"type": "number",
+				"description": "The customer's number of dependents.",
+				"example": 2
+			},
+			"occupation": {
+				"$ref": "#/components/schemas/OccupationInfo"
+			},
+			"citizenships": {
+				"type": "array",
+				"items": {
+					"$ref": "#/components/schemas/CitizenshipInfo"
+				}
+			}
+		},
+		"description": "Defines the demographic fields related to an individual customer."
+	},
+	"OccupationInfo": {
+		"required": [
+			"occupation"
+		],
+		"type": "object",
+		"properties": {
+			"occupation": {
+				"minLength": 1,
+				"type": "string",
+				"description": "Customer Occupation.",
+				"example": "Doctor"
+			},
+			"occupationDescription": {
+				"type": "string",
+				"description": "Customer Occupation Description.",
+				"readOnly": true,
+				"example": "Cardiologist"
+			}
+		}
+	},
+	"OrganizationDemographicsDetails": {
+		"type": "object",
+		"properties": {
+			"businessType": {
+				"type": "string",
+				"description": "The classification on the type of business",
+				"example": "401BT"
+			},
+			"foundedDate": {
+				"type": "string",
+				"description": "Date of inception of the Organization",
+				"format": "date",
+				"example": "1975-01-01"
+			},
+			"numberEmployees": {
+				"type": "string",
+				"description": "The number of employees.",
+				"example": "100"
+			},
+			"annualSalesDetails": {
+				"$ref": "#/components/schemas/AnnualSalesDetailsInfo"
+			}
+		},
+		"description": "Defines the demographic fields related to an organization customer."
+	},
+	"AnnualSalesDetailsInfo": {
+		"required": [
+			"annualSalesAmount"
+		],
+		"type": "object",
+		"properties": {
+			"annualSalesAmount": {
+				"minLength": 1,
+				"type": "string",
+				"description": "Identifies the organizationâ€™s current sales level.",
+				"example": "may be represented as a range â€“ (001) $0.00 - $100,000, (002) $100,001 - $250,000, etc."
+			},
+			"annualSalesDescription": {
+				"type": "string",
+				"description": "Description of the current sales value.",
+				"readOnly": true,
+				"example": "Annual Sales Revenue"
+			}
+		}
+	},
+	"CreateCustomerResponse": {
+		"type": "object",
+		"properties": {
+			"customerId": {
+				"type": "integer",
+				"description": "Customer id",
+				"format": "int64",
+				"example": 70000000000
+			},
+			"contacts": {
+				"$ref": "#/components/schemas/ContactResponseList"
+			},
+			"maintenanceResponse": {
+				"$ref": "#/components/schemas/MaintenanceTime"
+			}
+		}
+	},
+	"CustomerContactsResponse": {
+		"type": "object",
+		"properties": {
+			"contacts": {
+				"$ref": "#/components/schemas/ContactResponseList"
+			},
+			"maintenanceResponse": {
+				"$ref": "#/components/schemas/MaintenanceTime"
+			}
+		}
+	},
+	"ContactResponseList": {
+		"type": "array",
+		"items": {
+			"$ref": "#/components/schemas/ContactResponse"
+		}
+	},
+	"ContactResponse": {
+		"type": "object",
+		"properties": {
+			"phone": {
+				"$ref": "#/components/schemas/PhoneSummary"
+			},
+			"email": {
+				"$ref": "#/components/schemas/EmailSummary"
+			},
+			"postalAddress": {
+				"$ref": "#/components/schemas/PostalAddressSummary"
+			},
+			"socialMedia": {
+				"$ref": "#/components/schemas/SocialMediaSummary"
+			}
+		},
+		"description": "Contact response information"
+	},
+	"MaintenanceTime": {
+		"type": "object",
+		"properties": {
+			"acceptedTimestamp": {
+				"type": "string",
+				"description": "Date and time transaction was accepted by a delivery channel",
+				"example": "2020-07-20T06:48:19.183352-04:00"
+			},
+			"financialEntityOperationalTimestamp": {
+				"type": "string",
+				"description": "Financial entity operational timestamp",
+				"example": "2020-07-20T06:48:19.183352-04:00"
+			},
+			"operatorUTCTimestamp": {
+				"type": "string",
+				"description": "Date and time that the service was completed",
+				"example": "2020-07-20T06:48:19.183352-04:00"
+			},
+			"organizationUnitOperationalTimestamp": {
+				"type": "string",
+				"description": "Organization unit operational timestamp",
+				"example": "2020-07-20T06:48:19.183352-04:00"
+			}
+		},
+		"description": "Operational timestamp information"
+	},
+	"CustomerRoleInfo": {
+		"required": [
+			"roleType"
+		],
+		"type": "object",
+		"properties": {
+			"startDate": {
+				"type": "string",
+				"description": "Identifies the customer role  effective date.",
+				"format": "date",
+				"example": "2020-01-01"
+			},
+			"endDate": {
+				"type": "string",
+				"description": "Identifies the end date of current role of customer.",
+				"format": "date",
+				"example": "2030-01-01"
+			},
+			"roleType": {
+				"minLength": 1,
+				"type": "string",
+				"description": "Categorization of the role the Customer is in related to the financial entity.",
+				"example": "Customer",
+				"enum": [
+					"Customer",
+					"Prospect",
+					"Related Party"
+				]
+			}
+		}
+	},
+	"Name": {
+		"required": [
+			"type"
+		],
+		"type": "object",
+		"properties": {
+			"startDate": {
+				"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+				"type": "string",
+				"description": "The date the name is effective",
+				"format": "date",
+				"example": "2020-01-01"
+			},
+			"endDate": {
+				"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+				"type": "string",
+				"description": "The date the name is no longer in effect",
+				"format": "date",
+				"example": "2030-01-01"
+			},
+			"type": {
+				"type": "string",
+				"description": "Identifies the type of name associated with a customer (ie, DBA, Primary, Alternate, etc)",
+				"example": "Alternate"
+			},
+			"typeDescription": {
+				"type": "string",
+				"description": "Description of the name type",
+				"readOnly": true,
+				"example": "description"
+			},
+			"fullName": {
+				"type": "string",
+				"description": "The full name of the customer",
+				"example": "James William"
+			},
+			"firstName": {
+				"type": "string",
+				"description": "The first name of the customer",
+				"example": "James"
+			},
+			"midName": {
+				"type": "string",
+				"description": "The middle name of an individual. This may represent a single name, multiple names, or an initial.",
+				"example": "A"
+			},
+			"lastName": {
+				"type": "string",
+				"description": "The last name of the customer",
+				"example": "William"
+			},
+			"secondLastName": {
+				"type": "string",
+				"description": "The second last or family name of the individual",
+				"example": "Ethan"
+			},
+			"prefix": {
+				"type": "string",
+				"description": "The name prefix of the customer",
+				"example": "Mr"
+			},
+			"suffix": {
+				"type": "string",
+				"description": "The name suffix of the individual's name",
+				"example": "Sr"
+			},
+			"title": {
+				"type": "string",
+				"description": "The title of an individual.",
+				"example": "Dr"
+			}
+		},
+		"description": "Contains fields related to a customer name, such as first name, last name and name type."
+	},
+	"ContactInfo": {
+		"type": "object",
+		"properties": {
+			"postalAddresses": {
+				"type": "array",
+				"description": "array of postal addresses",
+				"items": {
+					"$ref": "#/components/schemas/PostalAddress"
+				}
+			},
+			"phoneNumbers": {
+				"type": "array",
+				"description": "Array of Phone Numbers",
+				"items": {
+					"$ref": "#/components/schemas/Phone"
+				}
+			},
+			"emailAddresses": {
+				"type": "array",
+				"description": "Defines an array of email addresses",
+				"items": {
+					"$ref": "#/components/schemas/EmailAddress"
+				}
+			},
+			"socialMediaAccounts": {
+				"type": "array",
+				"description": "Defines an array of social media accounts",
+				"items": {
+					"$ref": "#/components/schemas/SocialMediaAccount"
+				}
+			}
+		},
+		"description": "Defines complete set of Contact information for the customer"
+	},
+	"PostalAddress": {
+		"required": [
+			"addressCategory",
+			"postalAddressType"
+		],
+		"type": "object",
+		"properties": {
+			"id": {
+				"type": "string",
+				"description": "Internal system of record identifier to uniquely identify the Postal Address record",
+				"readOnly": true,
+				"example": "0000000000"
+			},
+			"addressCategory": {
+				"$ref": "#/components/schemas/AddressCategory"
+			},
+			"startDate": {
+				"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+				"type": "string",
+				"description": "The effective date of the postal address.",
+				"format": "date",
+				"example": "2020-01-01"
+			},
+			"legalAddressStartDate": {
+				"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+				"type": "string",
+				"description": "The date the address became effective as the legal address of the customer",
+				"format": "date",
+				"example": "2020-01-01"
+			},
+			"endDate": {
+				"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+				"type": "string",
+				"description": "The expiration date of the postal address.",
+				"format": "date",
+				"example": "2030-01-01"
+			},
+			"perpetualStartDate": {
+				"pattern": "^(1[0-2]|0[1-9])-(3[01]|[12][0-9]|0[1-9])$",
+				"type": "string",
+				"description": "Perpetual calendar month and day represented as 01-31 used for identifying the date the postal address, of category seasonal, will be in effect each year",
+				"example": "01-31"
+			},
+			"perpetualEndDate": {
+				"pattern": "^(1[0-2]|0[1-9])-(3[01]|[12][0-9]|0[1-9])$",
+				"type": "string",
+				"description": "Perpetual calendar month and day represented as 01-31 used for identifying the date the postal address, of category seasonal, will no longer be in effect each year",
+				"example": "01-31"
+			},
+			"addressFormatName": {
+				"type": "string",
+				"description": "The address format name identifies the format of the postal address.",
+				"example": "US Domestic"
+			},
+			"addressFormatCountryCode": {
+				"maxLength": 3,
+				"minLength": 1,
+				"type": "string",
+				"description": "The country code used to look up the name of the postal address format for the postal address.",
+				"writeOnly": true,
+				"example": "US"
+			},
+			"mailingCode": {
+				"type": "string",
+				"description": "Identifies the usability of the address for direct mailing.",
+				"example": "All Mail Allowed",
+				"enum": [
+					"All Mail Allowed",
+					"Hold Mail",
+					"No Mail Allowed",
+					"Returned Mail",
+					"Reset"
+				]
+			},
+			"specialInstruction": {
+				"type": "string",
+				"description": "Contains the special instructions associated with the contact point.",
+				"example": "Will be available in office working hours, 10 am to 5 pm."
+			},
+			"sequenceNumber": {
+				"minimum": 0,
+				"type": "integer",
+				"description": "Order of the postal address entity",
+				"example": 1
+			},
+			"postalAddressType": {
+				"$ref": "#/components/schemas/AddressType"
+			},
+			"preferredIndicator": {
+				"type": "boolean",
+				"description": "Indicates whether the address is the preferred address for the involved party.",
+				"readOnly": true,
+				"example": true
+			},
+			"addressLines": {
+				"type": "array",
+				"description": "The address lines associated with the postal address.",
+				"items": {
+					"$ref": "#/components/schemas/AddressDetail"
+				}
+			},
+			"locationLines": {
+				"type": "array",
+				"description": "The location lines associated with the postal address.",
+				"items": {
+					"$ref": "#/components/schemas/LocationDetail"
+				}
+			},
+			"formattedAddressLine": {
+				"type": "array",
+				"description": "List of formatted address lines",
+				"readOnly": true,
+				"items": {
+					"$ref": "#/components/schemas/FormattedAddressLineDetails"
+				}
+			},
+			"recipientLines": {
+				"type": "array",
+				"description": "The recipient lines associated with the postal address.",
+				"items": {
+					"$ref": "#/components/schemas/RecipientDetail"
+				}
+			},
+			"systemOfRecordAddress": {
+				"$ref": "#/components/schemas/SystemOfRecordAddress"
+			}
+		},
+		"description": "Contains information related to a postal address."
+	},
+	"AddressCategory": {
+		"type": "string",
+		"description": "The categorization info for the address",
+		"example": "Master",
+		"enum": [
+			"Master",
+			"Temporary",
+			"Seasonal"
+		]
+	},
+	"AddressType": {
+		"type": "string",
+		"description": "Address Type",
+		"example": "Home",
+		"enum": [
+			"Work",
+			"Business",
+			"Physical",
+			"Mailing",
+			"Other",
+			"Home",
+			"Unknown"
+		]
+	},
+	"AddressDetail": {
+		"type": "object",
+		"properties": {
+			"addressLineType": {
+				"type": "string",
+				"description": "Identifies the particular type of address line.  (e.g. Information Line 1, Information Line 2, Destination Line 1, Destination Line 2, Destination Line 3, Location Line 1, Location Line 2, Location Line 3, Location Line 4)",
+				"example": "Destination Line 1"
+			},
+			"addressLineText": {
+				"type": "string",
+				"description": "Contains the text portion associated with the postal address line type",
+				"example": "House No I1003"
+			}
+		},
+		"description": "Defines address line details"
+	},
+	"LocationDetail": {
+		"type": "object",
+		"properties": {
+			"locationType": {
+				"type": "string",
+				"description": "Identifies the type of address location component.  (e.g. City, Country, County, Delivery Point Bar Code, District, Municipality, Neighborhood, Parish, Postal Code, Postal Code Extension, Province, Region, State, Village)",
+				"example": "City"
+			},
+			"locationText": {
+				"type": "string",
+				"description": "Contains the text portion associated with the location type",
+				"example": "New York"
+			}
+		},
+		"description": "Defines the postal address location details associated with the postal address type and category"
+	},
+	"FormattedAddressLineDetails": {
+		"required": [
+			"addressLineCode",
+			"addressLineText",
+			"sequenceNumber"
+		],
+		"type": "object",
+		"properties": {
+			"sequenceNumber": {
+				"type": "integer",
+				"description": "Sequence number used to identify a particular address line.",
+				"example": 2
+			},
+			"addressLineText": {
+				"type": "string",
+				"description": "An address line for an Involved Party.",
+				"example": "James Williams"
+			},
+			"addressLineCode": {
+				"type": "string",
+				"description": "A code identifying the type of address contained in the attribute line text",
+				"example": "Information Line 1"
+			}
+		}
+	},
+	"RecipientDetail": {
+		"type": "object",
+		"properties": {
+			"recipientLineType": {
+				"type": "string",
+				"description": "Identifies the particular type of recipient line.  (e.g. Recipient Line 1, Recipient Line 2)",
+				"example": "Recipient Line 1"
+			},
+			"recipientLineText": {
+				"type": "string",
+				"description": "Contains the text portion associated with the recipient line type",
+				"example": "James William"
+			},
+			"recipientLineName": {
+				"type": "string",
+				"description": "Identifies the type of name associated with the recipient.",
+				"example": "Primary"
+			},
+			"recipientLineDescription": {
+				"type": "string",
+				"description": "Description of the name type associated with the Recipient.",
+				"example": "Individual Primary"
+			}
+		},
+		"description": "Defines recipient line details"
+	},
+	"SystemOfRecordAddress": {
+		"type": "object",
+		"properties": {
+			"contactCode": {
+				"type": "string",
+				"description": "The system of record (SOR) contact type for the point of contact",
+				"example": "Home"
+			},
+			"sequenceNumber": {
+				"minimum": 0,
+				"type": "integer",
+				"description": "SOR sequence number",
+				"example": 1
+			}
+		},
+		"description": "System of record address code"
+	},
+	"Phone": {
+		"type": "object",
+		"properties": {
+			"id": {
+				"type": "string",
+				"description": "Internal system of record  identifier of the phone",
+				"readOnly": true,
+				"example": "0000000000"
+			},
+			"startDate": {
+				"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+				"type": "string",
+				"description": "The effective date of the phone number.",
+				"format": "date",
+				"example": "2020-01-01"
+			},
+			"endDate": {
+				"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+				"type": "string",
+				"description": "The expiration date of the phone number.",
+				"format": "date",
+				"example": "2030-01-01"
+			},
+			"sequenceNumber": {
+				"minimum": 0,
+				"type": "integer",
+				"description": "Order of the phone number entity",
+				"example": 1
+			},
+			"fullPhoneNumber": {
+				"type": "string",
+				"description": "Phone number of the customer.",
+				"example": "113-698-4472"
+			},
+			"type": {
+				"$ref": "#/components/schemas/PhoneType"
+			},
+			"internationalPrefix": {
+				"type": "string",
+				"description": "Code dialed prior to the international number.",
+				"example": "1"
+			},
+			"countryCallingCode": {
+				"type": "string",
+				"description": "Used to reach the particular telephone system for each nation or special service.",
+				"example": "91"
+			},
+			"trunkCode": {
+				"type": "string",
+				"description": "Refers to the initial digit(s) to be dialed in a domestic call, prior to the area code (if necessary.",
+				"example": "112"
+			},
+			"areaCode": {
+				"type": "string",
+				"description": "Used within many nations to route calls to a particular city, region or special service.",
+				"example": "917"
+			},
+			"telephoneNumber": {
+				"type": "string",
+				"description": "The seven digit number used when dialing locally.",
+				"example": "113-698-4472"
+			},
+			"extensionNumber": {
+				"type": "string",
+				"description": "A sub-number that is used when the telephone number is either a central number or toll free.",
+				"example": "10107"
+			},
+			"textEnabledIndicator": {
+				"type": "boolean",
+				"description": "Identifies whether the telephone is capable of receiving a text message.",
+				"example": true
+			},
+			"specialInstructions": {
+				"type": "string",
+				"description": "Contains the special instructions associated with the phone contact point.",
+				"example": "NA"
+			},
+			"permitSalesCallsIndicator": {
+				"type": "boolean",
+				"description": "Identifies whether the involved party has given permission to use the telephone number for sales calls.",
+				"example": true
+			},
+			"timezone": {
+				"type": "string",
+				"description": "Specifies the time zone associated with the phone record expressed in IANA format. For example, America/New York.",
+				"example": "America/New York"
+			},
+			"preferredTimeframes": {
+				"type": "array",
+				"description": "List of preferred time frames",
+				"items": {
+					"$ref": "#/components/schemas/PreferredTimeFrame"
+				}
+			},
+			"preferredPhoneIndicator": {
+				"type": "boolean",
+				"description": "Indicates whether the phone is the preferred phone for phone contact for the involved party.",
+				"example": true
+			},
+			"preferredTextIndicator": {
+				"type": "boolean",
+				"description": "Indicates whether the text enabled phone is the preferred phone for text message communications for the involved party.",
+				"example": true
+			},
+			"systemOfRecordPhone": {
+				"$ref": "#/components/schemas/SystemOfRecordAddress"
+			}
+		},
+		"description": "Phone Number Details"
+	},
+	"PhoneSummary": {
+        "type": "object",
+        "properties": {
+          "phoneType": {
+            "$ref": "#/components/schemas/PhoneType"
+          },
+          "sequenceNumber": {
+            "minimum": 0,
+            "type": "integer",
+            "description": "Order of the phone number entity",
+            "example": 1
+          },
+          "systemOfRecordPhone": {
+            "$ref": "#/components/schemas/SystemOfRecordAddress"
+          }
+        },
+        "description": "Phone summary information"
+      },
+	  "PhoneType": {
+        "type": "string",
+        "description": "Identifies the type of telephone number.",
+        "example": "Home",
+        "enum": [
+          "Business",
+          "Home",
+          "Fax",
+          "Mobile",
+          "Work",
+          "Other",
+          "Unknown"
+        ]
+      },
+	  "SystemOfRecordAddress": {
+        "type": "object",
+        "properties": {
+          "contactCode": {
+            "type": "string",
+            "description": "The system of record (SOR) contact type for the point of contact",
+            "example": "Home"
+          },
+          "sequenceNumber": {
+            "minimum": 0,
+            "type": "integer",
+            "description": "SOR sequence number",
+            "example": 1
+          }
+        },
+        "description": "System of record address code"
+      }
+	
+}
