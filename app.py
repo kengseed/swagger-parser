@@ -37,30 +37,34 @@ def display_dataframe(file_path):
 
     # Define a function to apply highlighting
     def highlight_true(s):
-        return ['background-color: yellow' if v else '' for v in s]
+        return ["background-color: yellow" if v else "" for v in s]
 
     # Apply the function to the DataFrame
-    styled_df = df.style.apply(highlight_true, subset=['required'])
+    styled_df = df.style.apply(highlight_true, subset=["required"])
     st.dataframe(styled_df)
 
 
 st.set_page_config(page_title="Swagger File Parser", layout="wide")
-st.title('Swagger File Parser')
-uploaded_file = st.file_uploader("Upload a Swagger file (JSON or YAML)", type=['json', 'yaml', 'yml'])
+st.title("Swagger File Parser")
+uploaded_file = st.file_uploader(
+    "Upload a Swagger file (JSON or YAML)", type=["json", "yaml", "yml"]
+)
 if uploaded_file is not None:
     try:
-        file_type = uploaded_file.name.split('.')[-1]
+        file_type = uploaded_file.name.split(".")[-1]
         file_content = uploaded_file.getvalue()
         base_name = os.path.splitext(uploaded_file.name)[0]
-        output_file = f'{base_name}_output.csv'
+        # output_file = f'{base_name}_output.csv'
 
-        process_swagger_file(file_content, file_type, output_file)
+        output_file_names = process_swagger_file(file_content, file_type, base_name)
 
-        st.success('Processing has completed.')
-        download_link = get_download_link(output_file)
-        st.markdown(download_link, unsafe_allow_html=True)
+        st.success("Processing has completed.")
+        # download_link = get_download_link(output_file)
+        # st.markdown(download_link, unsafe_allow_html=True)
 
-        display_dataframe(output_file)
+        for f in output_file_names:
+            st.subheader(f)
+            display_dataframe(f)
     except Exception as e:
         st.error(f"Error processing file: {e}")
-        traceback.print_exc() 
+        traceback.print_exc()
