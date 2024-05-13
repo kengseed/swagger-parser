@@ -41,7 +41,7 @@ def get_object_name(sub_schema_name, prop_name, is_array):
 
 
 def get_properties_by_schema(
-    swagger_data, schema_name, prop_results, sub_schema_name, isRequestBody
+    swagger_data, schema_name, prop_results, sub_schema_name, isRequestBody, isResponseBody
 ):
     # prop_results = prevProperties if len(prevProperties) > 0 else []
 
@@ -74,7 +74,7 @@ def get_properties_by_schema(
             enum_properties = get_enum_properties(swagger_data, sub_schema)
 
             if len(enum_properties) > 0:  # Enum
-                if not isRequestBody or not enum_properties.get("readOnly", ""):
+                if (not isRequestBody or not enum_properties.get("readOnly", "")) and (not isResponseBody or not enum_properties.get("writeOnly", "")):
                     prop_results.append(
                         {
                             "subDomain": schema_name,
@@ -86,6 +86,7 @@ def get_properties_by_schema(
                             "fieldExampleValue": "'"
                             + str(enum_properties.get("example", "")),
                             "fieldIsReadOnly": enum_properties.get("readOnly", ""),
+                            "fieldIsWriteOnly": enum_properties.get("writeOnly", ""),
                             "fieldValuePattern": enum_properties.get("pattern", ""),
                             "fieldMinLength": enum_properties.get("minLength", ""),
                             "fieldMaxLength": enum_properties.get("maxLength", ""),
@@ -95,7 +96,7 @@ def get_properties_by_schema(
                         }
                     )
             else:  # Object, Array
-                if not isRequestBody or not prop.get("readOnly", ""):
+                if (not isRequestBody or not prop.get("readOnly", "")) and (not isResponseBody or not prop.get("writeOnly", "")):
                     prop_results.append(
                         {
                             "subDomain": schema_name,
@@ -106,6 +107,7 @@ def get_properties_by_schema(
                             "fieldFormat": "",
                             "fieldExampleValue": "",
                             "fieldIsReadOnly": prop.get("readOnly", ""),
+                            "fieldIsWriteOnly": prop.get("writeOnly", ""),
                             "fieldValuePattern": "",
                             "fieldMinLength": "",
                             "fieldMaxLength": "",
@@ -118,9 +120,10 @@ def get_properties_by_schema(
                         prop_results,
                         object_name,
                         isRequestBody,
+                        isResponseBody,
                     )
         else:
-            if not isRequestBody or not prop.get("readOnly", ""):
+            if (not isRequestBody or not prop.get("readOnly", "")) and (not isResponseBody or not prop.get("writeOnly", "")):
                 prop_results.append(
                     {
                         "subDomain": schema_name,
@@ -131,14 +134,13 @@ def get_properties_by_schema(
                         "fieldFormat": prop.get("format", ""),
                         "fieldExampleValue": "'" + str(prop.get("example", "")),
                         "fieldIsReadOnly": prop.get("readOnly", ""),
+                        "fieldIsWriteOnly": prop.get("writeOnly", ""),
                         "fieldValuePattern": prop.get("pattern", ""),
                         "fieldMinLength": prop.get("minLength", ""),
                         "fieldMaxLength": prop.get("maxLength", ""),
                         "enumListValue": join_array(prop.get("enum", []), ","),
                     }
                 )
-            # print(prop_results)
-
     return prop_results
 
 
@@ -197,6 +199,7 @@ def extract_services_with_properties(swagger_data):
 
             # Add Parameters Detail (Header, Path, Query)
             for param in details.get("parameters", []):
+
                 item = {
                     "tag": details.get("tags", "")[0],
                     "operationId": details.get("operationId", ""),
@@ -213,6 +216,7 @@ def extract_services_with_properties(swagger_data):
                     "fieldFormat": param.get("schema", "").get("format", ""),
                     "fieldExampleValue": "'" + str(param.get("example", "")),
                     "fieldIsReadOnly": param.get("schema", "").get("readOnly", ""),
+                    "fieldIsWriteOnly": param.get("schema", "").get("writeOnly", ""),
                     "fieldValuePattern": param.get("schema", "").get("pattern", ""),
                     "fieldMinLength": param.get("schema", "").get("minLength", ""),
                     "fieldMaxLength": param.get("schema", "").get("maxLength", ""),
@@ -220,7 +224,7 @@ def extract_services_with_properties(swagger_data):
                     "responses": responseCodes,
                 }
                 parsed_data.append(item)
-
+                
             # Add Request Body Details (If have model ref)
             if requestBodyRef != "":
                 properties = get_properties_by_schema(
@@ -229,6 +233,7 @@ def extract_services_with_properties(swagger_data):
                     [],
                     "",
                     True,
+                    False,
                 )
 
                 for prop in properties:
@@ -248,6 +253,7 @@ def extract_services_with_properties(swagger_data):
                         "fieldFormat": prop["fieldFormat"],
                         "fieldExampleValue": "'" + str(prop["fieldExampleValue"]),
                         "fieldIsReadOnly": prop["fieldIsReadOnly"],
+                        "fieldIsWriteOnly": prop["fieldIsWriteOnly"],
                         "fieldValuePattern": prop["fieldValuePattern"],
                         "fieldMinLength": prop["fieldMinLength"],
                         "fieldMaxLength": prop["fieldMaxLength"],
@@ -264,6 +270,7 @@ def extract_services_with_properties(swagger_data):
                     [],
                     "",
                     False,
+                    True,
                 )
 
                 for prop in properties:
@@ -283,6 +290,7 @@ def extract_services_with_properties(swagger_data):
                         "fieldFormat": prop["fieldFormat"],
                         "fieldExampleValue": "'" + str(prop["fieldExampleValue"]),
                         "fieldIsReadOnly": prop["fieldIsReadOnly"],
+                        "fieldIsWriteOnly": prop["fieldIsWriteOnly"],
                         "fieldValuePattern": prop["fieldValuePattern"],
                         "fieldMinLength": prop["fieldMinLength"],
                         "fieldMaxLength": prop["fieldMaxLength"],
@@ -306,6 +314,7 @@ def extract_schemas_with_properties(swagger_data):
             [],
             "",
             False,
+            False,
         )
 
         for prop in properties:
@@ -318,6 +327,7 @@ def extract_schemas_with_properties(swagger_data):
                 "fieldFormat": prop["fieldFormat"],
                 "fieldExampleValue": "'" + str(prop["fieldExampleValue"]),
                 "fieldIsReadOnly": prop["fieldIsReadOnly"],
+                "fieldIsWriteOnly": prop["fieldIsWriteOnly"],
                 "fieldValuePattern": prop["fieldValuePattern"],
                 "fieldMinLength": prop["fieldMinLength"],
                 "fieldMaxLength": prop["fieldMaxLength"],
@@ -378,6 +388,7 @@ def write_services_with_properties_to_csv(data, output_file):
                 "fieldFormat",
                 "fieldExampleValue",
                 "fieldIsReadOnly",
+                "fieldIsWriteOnly",
                 "fieldValuePattern",
                 "fieldMinLength",
                 "fieldMaxLength",
@@ -408,6 +419,7 @@ def write_schema_with_properties_to_csv(data, output_file):
                 "fieldFormat",
                 "fieldExampleValue",
                 "fieldIsReadOnly",
+                "fieldIsWriteOnly",
                 "fieldValuePattern",
                 "fieldMinLength",
                 "fieldMaxLength",
