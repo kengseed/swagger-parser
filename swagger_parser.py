@@ -41,12 +41,22 @@ def get_object_name(sub_schema_name, prop_name, is_array):
 
 
 def get_properties_by_schema(
-    swagger_data, schema_name, prop_results, sub_schema_name, isRequestBody, isResponseBody
+    swagger_data,
+    schema_name,
+    prop_results,
+    sub_schema_name,
+    isRequestBody,
+    isResponseBody,
+    oneOfSchema,
 ):
     # prop_results = prevProperties if len(prevProperties) > 0 else []
 
     # Get schema details
-    schema = swagger_data.get("components", {}).get("schemas", {}).get(schema_name, {})
+    schema = (
+        oneOfSchema
+        if oneOfSchema is not None
+        else swagger_data.get("components", {}).get("schemas", {}).get(schema_name, {})
+    )
     properties = schema.get("properties", {})
     requiredFields = schema.get("required", [])
 
@@ -74,7 +84,9 @@ def get_properties_by_schema(
             enum_properties = get_enum_properties(swagger_data, sub_schema)
 
             if len(enum_properties) > 0:  # Enum
-                if (not isRequestBody or not enum_properties.get("readOnly", "")) and (not isResponseBody or not enum_properties.get("writeOnly", "")):
+                if (not isRequestBody or not enum_properties.get("readOnly", "")) and (
+                    not isResponseBody or not enum_properties.get("writeOnly", "")
+                ):
                     prop_results.append(
                         {
                             "subDomain": schema_name,
@@ -96,7 +108,9 @@ def get_properties_by_schema(
                         }
                     )
             else:  # Object, Array
-                if (not isRequestBody or not prop.get("readOnly", "")) and (not isResponseBody or not prop.get("writeOnly", "")):
+                if (not isRequestBody or not prop.get("readOnly", "")) and (
+                    not isResponseBody or not prop.get("writeOnly", "")
+                ):
                     prop_results.append(
                         {
                             "subDomain": schema_name,
@@ -114,6 +128,7 @@ def get_properties_by_schema(
                             "enumListValue": "",
                         }
                     )
+
                     get_properties_by_schema(
                         swagger_data,
                         sub_schema,
@@ -121,15 +136,25 @@ def get_properties_by_schema(
                         object_name,
                         isRequestBody,
                         isResponseBody,
+                        None,
                     )
         else:
-            if (not isRequestBody or not prop.get("readOnly", "")) and (not isResponseBody or not prop.get("writeOnly", "")):
+            if (not isRequestBody or not prop.get("readOnly", "")) and (
+                not isResponseBody or not prop.get("writeOnly", "")
+            ):
+                # Check is oneOf array
+                oneOfProperties = prop.get("oneOf", [])
+
                 prop_results.append(
                     {
                         "subDomain": schema_name,
                         "fieldName": object_name,
                         "fieldDescription": prop.get("description"),
-                        "fieldDataType": prop.get("type"),
+                        "fieldDataType": (
+                            "One of " + str(prop.get("type"))
+                            if len(oneOfProperties) > 0
+                            else prop.get("type")
+                        ),
                         "required": prop_name in requiredFields,
                         "fieldFormat": prop.get("format", ""),
                         "fieldExampleValue": "'" + str(prop.get("example", "")),
@@ -141,6 +166,18 @@ def get_properties_by_schema(
                         "enumListValue": join_array(prop.get("enum", []), ","),
                     }
                 )
+
+                if len(oneOfProperties) > 0:
+                    for oneOfProp in oneOfProperties:
+                        get_properties_by_schema(
+                            swagger_data,
+                            schema_name,
+                            prop_results,
+                            object_name,
+                            isRequestBody,
+                            isResponseBody,
+                            oneOfProp,
+                        )
     return prop_results
 
 
@@ -224,7 +261,7 @@ def extract_services_with_properties(swagger_data):
                     "responses": responseCodes,
                 }
                 parsed_data.append(item)
-                
+
             # Add Request Body Details (If have model ref)
             if requestBodyRef != "":
                 properties = get_properties_by_schema(
@@ -234,6 +271,7 @@ def extract_services_with_properties(swagger_data):
                     "",
                     True,
                     False,
+                    None,
                 )
 
                 for prop in properties:
@@ -271,6 +309,7 @@ def extract_services_with_properties(swagger_data):
                     "",
                     False,
                     True,
+                    None,
                 )
 
                 for prop in properties:
@@ -315,6 +354,7 @@ def extract_schemas_with_properties(swagger_data):
             "",
             False,
             False,
+            None,
         )
 
         for prop in properties:
