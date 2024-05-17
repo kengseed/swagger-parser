@@ -48,6 +48,7 @@ def get_properties_by_schema(
     isRequestBody,
     isResponseBody,
     oneOfSchema,
+    original_schema_name,
 ):
     # prop_results = prevProperties if len(prevProperties) > 0 else []
 
@@ -59,6 +60,7 @@ def get_properties_by_schema(
     )
     properties = schema.get("properties", {})
     requiredFields = schema.get("required", [])
+    outerSubDomain = original_schema_name
 
     for prop_name, prop in properties.items():
         # Check array type
@@ -89,6 +91,7 @@ def get_properties_by_schema(
                 ):
                     prop_results.append(
                         {
+                            "outerSubDomain": outerSubDomain,
                             "subDomain": schema_name,
                             "fieldName": object_name,
                             "fieldDescription": enum_properties.get("description"),
@@ -113,6 +116,7 @@ def get_properties_by_schema(
                 ):
                     prop_results.append(
                         {
+                            "outerSubDomain": outerSubDomain,
                             "subDomain": schema_name,
                             "fieldName": object_name,
                             "fieldDescription": prop.get("description"),
@@ -137,6 +141,7 @@ def get_properties_by_schema(
                         isRequestBody,
                         isResponseBody,
                         None,
+                        outerSubDomain,
                     )
         else:
             if (not isRequestBody or not prop.get("readOnly", "")) and (
@@ -147,6 +152,7 @@ def get_properties_by_schema(
 
                 prop_results.append(
                     {
+                        "outerSubDomain": outerSubDomain,
                         "subDomain": schema_name,
                         "fieldName": object_name,
                         "fieldDescription": prop.get("description"),
@@ -177,6 +183,7 @@ def get_properties_by_schema(
                             isRequestBody,
                             isResponseBody,
                             oneOfProp,
+                            outerSubDomain,
                         )
     return prop_results
 
@@ -245,6 +252,7 @@ def extract_services_with_properties(swagger_data):
                     "summary": details.get("summary", ""),
                     "description": details.get("description", ""),
                     "fieldType": param.get("in", ""),
+                    "outerSubDomain":"",
                     "subDomain": "",
                     "fieldName": param.get("name", ""),
                     "fieldDescription": param.get("description", ""),
@@ -272,6 +280,7 @@ def extract_services_with_properties(swagger_data):
                     True,
                     False,
                     None,
+                    str(requestBodyRef).replace("#/components/schemas/", ""),
                 )
 
                 for prop in properties:
@@ -283,6 +292,7 @@ def extract_services_with_properties(swagger_data):
                         "summary": details.get("summary", ""),
                         "description": details.get("description", ""),
                         "fieldType": "requestBody",
+                        "outerSubDomain": prop["outerSubDomain"],
                         "subDomain": prop["subDomain"],
                         "fieldName": prop["fieldName"],
                         "fieldDescription": prop["fieldDescription"],
@@ -310,6 +320,7 @@ def extract_services_with_properties(swagger_data):
                     False,
                     True,
                     None,
+                    str(responseBodyRef).replace("#/components/schemas/", ""),
                 )
 
                 for prop in properties:
@@ -321,6 +332,7 @@ def extract_services_with_properties(swagger_data):
                         "summary": details.get("summary", ""),
                         "description": details.get("description", ""),
                         "fieldType": "responseBody",
+                        "outerSubDomain": prop["outerSubDomain"],
                         "subDomain": prop["subDomain"],
                         "fieldName": prop["fieldName"],
                         "fieldDescription": prop["fieldDescription"],
@@ -355,6 +367,7 @@ def extract_schemas_with_properties(swagger_data):
             False,
             False,
             None,
+            schema_name,
         )
 
         for prop in properties:
@@ -420,6 +433,7 @@ def write_services_with_properties_to_csv(data, output_file):
                 "summary",
                 "description",
                 "fieldType",
+                "outerSubDomain",
                 "subDomain",
                 "fieldName",
                 "fieldDescription",
