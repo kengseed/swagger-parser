@@ -32,12 +32,50 @@ def get_model_ref(obj, is_array):
     return obj.get("items", {}).get("$ref", "") if is_array else obj.get("$ref", "")
 
 
+def get_param_object(swagger_data, param):
+    ref = param.get("$ref", "")
+    param_object = param
+
+    if ref != "":
+        param_ref_paths = str(ref).split("/")
+
+        param_object = (
+            swagger_data.get("components", {})
+            .get(param_ref_paths[2], {})
+            .get(param_ref_paths[3], {})
+        )
+
+    return param_object
+
+
 def get_object_name(sub_schema_name, prop_name, is_array):
     return (
         ((sub_schema_name + ".") if sub_schema_name != "" else "")
         + prop_name
         + ("[]" if is_array else "")
     )
+
+
+def get_response_body_ref(details):
+    data = dict()
+    data["model_ref"] = ""
+    data["is_array"] = False
+
+    schema = (
+        details.get("responses", {})
+        .get("200", {})
+        .get("content", {})
+        .get("application/json", {})
+        .get("schema", {})
+    )
+
+    if schema.get("type", "") == "array":
+        data["model_ref"] = schema.get("items", {}).get("$ref", "")
+        data["is_array"] = True
+    else:
+        data["model_ref"] = schema.get("$ref", "")
+
+    return data
 
 
 def get_properties_by_schema(
@@ -229,20 +267,24 @@ def extract_services_with_properties(swagger_data):
                 .get("schema", {})
                 .get("$ref", "")
             )
-            responseBodyRef = (
-                details.get("responses", {})
-                .get("200", {})
-                .get("content", {})
-                .get("application/json", {})
-                .get("schema", {})
-                .get("$ref", "")
-            )
+            # HACK: Old version (Not support define array to interface level)
+            # responseBodyRef = (
+            #     details.get("responses", {})
+            #     .get("200", {})
+            #     .get("content", {})
+            #     .get("application/json", {})
+            #     .get("schema", {})
+            #     .get("$ref", "")
+            # )
+            response_body_ref = get_response_body_ref(details)
+
             responseCodes = (", ").join(
                 [str(code) for code in details.get("responses", {}).keys()]
             )
 
             # Add Parameters Detail (Header, Path, Query)
             for param in details.get("parameters", []):
+                param_object = get_param_object(swagger_data, param)
 
                 item = {
                     "tag": details.get("tags", "")[0],
@@ -251,21 +293,31 @@ def extract_services_with_properties(swagger_data):
                     "method": method.upper(),
                     "summary": details.get("summary", ""),
                     "description": details.get("description", ""),
-                    "fieldType": param.get("in", ""),
-                    "outerSubDomain":"",
+                    "fieldType": param_object.get("in", ""),
+                    "outerSubDomain": "",
                     "subDomain": "",
-                    "fieldName": param.get("name", ""),
-                    "fieldDescription": param.get("description", ""),
-                    "fieldDataType": param.get("schema", "").get("type", ""),
-                    "required": param.get("required", ""),
-                    "fieldFormat": param.get("schema", "").get("format", ""),
-                    "fieldExampleValue": "'" + str(param.get("example", "")),
-                    "fieldIsReadOnly": param.get("schema", "").get("readOnly", ""),
-                    "fieldIsWriteOnly": param.get("schema", "").get("writeOnly", ""),
-                    "fieldValuePattern": param.get("schema", "").get("pattern", ""),
-                    "fieldMinLength": param.get("schema", "").get("minLength", ""),
-                    "fieldMaxLength": param.get("schema", "").get("maxLength", ""),
-                    "enumListValue": join_array(param.get("enum", []), ","),
+                    "fieldName": param_object.get("name", ""),
+                    "fieldDescription": param_object.get("description", ""),
+                    "fieldDataType": param_object.get("schema", "").get("type", ""),
+                    "required": param_object.get("required", ""),
+                    "fieldFormat": param_object.get("schema", "").get("format", ""),
+                    "fieldExampleValue": "'" + str(param_object.get("example", "")),
+                    "fieldIsReadOnly": param_object.get("schema", "").get(
+                        "readOnly", ""
+                    ),
+                    "fieldIsWriteOnly": param_object.get("schema", "").get(
+                        "writeOnly", ""
+                    ),
+                    "fieldValuePattern": param_object.get("schema", "").get(
+                        "pattern", ""
+                    ),
+                    "fieldMinLength": param_object.get("schema", "").get(
+                        "minLength", ""
+                    ),
+                    "fieldMaxLength": param_object.get("schema", "").get(
+                        "maxLength", ""
+                    ),
+                    "enumListValue": join_array(param_object.get("enum", []), ","),
                     "responses": responseCodes,
                 }
                 parsed_data.append(item)
@@ -311,17 +363,49 @@ def extract_services_with_properties(swagger_data):
                     parsed_data.append(item)
 
             # Add Response Body Details (If have model ref)
-            if responseBodyRef != "":
+            if response_body_ref["model_ref"] != "":
+                response_model_name = str(response_body_ref["model_ref"]).replace(
+                    "#/components/schemas/", ""
+                )
                 properties = get_properties_by_schema(
                     swagger_data,
-                    str(responseBodyRef).replace("#/components/schemas/", ""),
+                    response_model_name,
                     [],
                     "",
                     False,
                     True,
                     None,
-                    str(responseBodyRef).replace("#/components/schemas/", ""),
+                    response_model_name,
                 )
+
+                # Added Anonymous Array Response 
+                if response_body_ref["is_array"]:
+                    parsed_data.append(
+                        {
+                            "tag": details.get("tags", "")[0],
+                            "operationId": details.get("operationId", ""),
+                            "path": path,
+                            "method": method.upper(),
+                            "summary": details.get("summary", ""),
+                            "description": details.get("description", ""),
+                            "fieldType": "responseBody",
+                            "outerSubDomain": "",
+                            "subDomain": "",
+                            "fieldName": "Anonymous",
+                            "fieldDescription": "Anonymous Array",
+                            "fieldDataType": "array",
+                            "required": "",
+                            "fieldFormat": "",
+                            "fieldExampleValue": "",
+                            "fieldIsReadOnly": "",
+                            "fieldIsWriteOnly": "",
+                            "fieldValuePattern": "",
+                            "fieldMinLength": "",
+                            "fieldMaxLength": "",
+                            "enumListValue": "",
+                            "responses": responseCodes,
+                        }
+                    )
 
                 for prop in properties:
                     item = {

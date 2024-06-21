@@ -1,0 +1,1333 @@
+{
+	"openapi": "3.0.1",
+	"info": {
+		"title": "Banking Platform Services: Customer Accounts",
+		"description": "Returns all the accounts owned by the customer.",
+		"contact": {
+			"name": "Banking Platform Product Leads",
+			"email": "bankingplatformccbusinessowner@fisglobal.com"
+		},
+		"version": "1.0.0"
+	},
+	"servers": [
+		{
+			"url": "https://api-gw-uat.fisglobal.com/rest/banking-platform-services/information-reporting/customer-accounts/v1"
+		},
+		{
+			"url": "http://api-gw-uat.fisglobal.com/rest/banking-platform-services/information-reporting/customer-accounts/v1"
+		}
+	],
+	"security": [
+		{
+			"Authorization": []
+		}
+	],
+	"tags": [
+		{
+			"name": "Accounts",
+			"description": "Customer Accounts group",
+			"externalDocs": {
+				"description": "Find out more",
+				"url": "http://swagger.io"
+			}
+		}
+	],
+	"paths": {
+		"/customers/{customerId}/accounts": {
+			"get": {
+				"tags": [
+					"Accounts"
+				],
+				"summary": "Retrieve the customer account list for the given customer id.",
+				"description": "The service supports retrieval of account list for the customer Id.",
+				"operationId": "getAccountsForCustomer",
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/uuid"
+					},
+					{
+						"$ref": "#/components/parameters/organization-id"
+					},
+					{
+						"$ref": "#/components/parameters/channel"
+					},
+					{
+						"$ref": "#/components/parameters/customerId"
+					},
+					{
+						"$ref": "#/components/parameters/accountTypes"
+					},
+					{
+						"$ref": "#/components/parameters/accessType"
+					},
+					{
+						"$ref": "#/components/parameters/includeDebitCards"
+					},
+					{
+						"$ref": "#/components/parameters/isSummary"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"headers": {
+							"uuid": {
+								"$ref": "#/components/headers/uuid"
+							}
+						},
+						"content": {
+							"application/x-ndjson": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/AccountDetailsDto"
+									}
+								}
+							},
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/AccountDetailsDto"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid Request",
+						"headers": {
+							"uuid": {
+								"$ref": "#/components/headers/uuid"
+							}
+						},
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/400ErrorResponse"
+								}
+							},
+							"application/x-ndjson": {
+								"schema": {
+									"$ref": "#/components/schemas/400ErrorResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Invalid Request",
+						"headers": {
+							"uuid": {
+								"$ref": "#/components/headers/uuid"
+							}
+						},
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/422ErrorResponseDetails"
+								}
+							},
+							"application/x-ndjson": {
+								"schema": {
+									"$ref": "#/components/schemas/422ErrorResponseDetails"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Invalid Request",
+						"headers": {
+							"uuid": {
+								"$ref": "#/components/headers/uuid"
+							}
+						},
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/500ErrorResponseDetails"
+								}
+							},
+							"application/x-ndjson": {
+								"schema": {
+									"$ref": "#/components/schemas/500ErrorResponseDetails"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"default": []
+					}
+				],
+				"x-auth-type": "Application & Application User",
+				"x-codegen-request-body-name": "Users",
+				"x-throttling-tier": "Unlimited"
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"AccountDetailsDto": {
+				"type": "object",
+				"properties": {
+					"accountId": {
+						"type": "string",
+						"description": "Combination of Account number and Account Type",
+						"example": "888222555_XACCT_152496"
+					},
+					"accountNumber": {
+						"type": "string",
+						"description": "The account number that uniquely identifies the customer",
+						"example": "1234"
+					},
+					"accountName": {
+						"type": "string",
+						"description": "Name On the Account",
+						"example": "20140129"
+					},
+					"nickName": {
+						"type": "string",
+						"description": "Nick Name of the Account",
+						"example": "DR"
+					},
+					"accountType": {
+						"type": "string",
+						"description": "The type of the account or the product",
+						"example": "John"
+					},
+					"currencyCode": {
+						"type": "string",
+						"description": "The currency of the account balance.",
+						"example": "ONCE"
+					},
+					"routingNumber": {
+						"type": "string",
+						"description": "The routing number for the account",
+						"example": "123"
+					},
+					"dateOpened": {
+						"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+						"type": "string",
+						"description": "Date account was opened;",
+						"format": "date",
+						"example": "2021-11-17"
+					},
+					"dateClosed": {
+						"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+						"type": "string",
+						"description": "Date account was opened;",
+						"format": "date",
+						"example": "2021-11-17"
+					},
+					"currentBalanceDate": {
+						"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+						"type": "string",
+						"description": "Date Current Balance was last updated",
+						"format": "date",
+						"example": "2021-11-17"
+					},
+					"apyDate": {
+						"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+						"type": "string",
+						"description": "Date annual Percentage Yield was last updated",
+						"format": "date",
+						"example": "2021-11-17"
+					},
+					"nyDigAccountId": {
+						"type": "string",
+						"description": "Digital Account ID for bitcoin",
+						"example": "200.01"
+					},
+					"productDetail": {
+						"$ref": "#/components/schemas/ProductDetailObject"
+					},
+					"addresses": {
+						"type": "array",
+						"description": "The list of Addresses",
+						"items": {
+							"$ref": "#/components/schemas/Address"
+						}
+					},
+					"accountOwners": {
+						"type": "array",
+						"description": "The list of accountOwners",
+						"items": {
+							"$ref": "#/components/schemas/AccountOwner"
+						}
+					},
+					"balances": {
+						"$ref": "#/components/schemas/BalanceObject"
+					},
+					"payments": {
+						"$ref": "#/components/schemas/PaymentsObject"
+					},
+					"otherDetails": {
+						"$ref": "#/components/schemas/OtherDetailsObject"
+					}
+				},
+				"description": "Account details Object"
+			},
+			"ProductDetailObject": {
+				"type": "object",
+				"properties": {
+					"productCategory": {
+						"type": "string",
+						"description": "Identifies the the type and group of the product",
+						"example": "productCategory"
+					},
+					"productCode": {
+						"type": "string",
+						"description": "Unique identifier of the product in the banks Product Catalog",
+						"example": "productCode"
+					},
+					"productName": {
+						"type": "string",
+						"description": "Business label of the product assigned by the bank",
+						"example": "productName"
+					},
+					"productDescription": {
+						"type": "string",
+						"description": "Detailed description of the product assigned by the FI",
+						"example": "productDescription"
+					},
+					"productSubCategory": {
+						"type": "string",
+						"description": "Identifies the sub type (sub classification) of the product",
+						"example": "productSubCategory"
+					},
+					"productType": {
+						"type": "string",
+						"description": "Identifies the product type by code",
+						"example": "productType"
+					}
+				},
+				"description": "Product Details"
+			},
+			"Address": {
+				"type": "object",
+				"properties": {
+					"streetName": {
+						"type": "string",
+						"description": "Street name of address",
+						"example": "streetName"
+					},
+					"streetName2": {
+						"type": "string",
+						"description": "Street name of address",
+						"example": "streetName2"
+					},
+					"type": {
+						"type": "string",
+						"description": "Type of Address",
+						"example": "PRIMARY"
+					}
+				},
+				"description": "Address"
+			},
+			"AccountOwner": {
+				"type": "object",
+				"properties": {
+					"customerId": {
+						"type": "string",
+						"description": "Unique identifier of the customer in the system.",
+						"example": "12345"
+					},
+					"relationship": {
+						"type": "string",
+						"description": "Indicates customer relationship (PRIMARY/SECONDARY)",
+						"example": "PRIMARY"
+					},
+					"relationshipCode": {
+						"type": "string",
+						"description": "Code identifying customers relationship to the account",
+						"example": "relationshipCode"
+					},
+					"customerFullName": {
+						"type": "string",
+						"description": "Customer full name",
+						"example": "customerFullName"
+					}
+				},
+				"description": "accountOwner"
+			},
+			"BalanceObject": {
+				"type": "object",
+				"properties": {
+					"accessibleBalance": {
+						"type": "string",
+						"description": "The amount in the account that is accessible to the customer who owns the Deposit account.",
+						"example": "100.00"
+					},
+					"availableBalance": {
+						"type": "number",
+						"description": "The amount in the account that is available to the customer who owns the Deposit account.",
+						"example": 100
+					},
+					"availableCash": {
+						"type": "number",
+						"description": "The available cash the customer can access from the Credit Card account",
+						"example": 100
+					},
+					"availableCredit": {
+						"type": "number",
+						"description": "Credit available to a customer for an Overdraft, Line of Credit",
+						"example": 100
+					},
+					"creditLimit": {
+						"type": "number",
+						"description": "Credit limit for a Line of Credit  account",
+						"example": 100
+					},
+					"currentBalance": {
+						"type": "number",
+						"description": "The current balance of a Deposit account",
+						"example": 100
+					},
+					"currentEscrowBalance": {
+						"type": "number",
+						"description": "Current escrow balance / Escrow balance",
+						"example": 100
+					},
+					"holdAmount": {
+						"type": "number",
+						"description": "Funds being held until transactions clear.",
+						"example": 100
+					},
+					"lastStatementBalance": {
+						"type": "number",
+						"description": "The last statement balance of an account.",
+						"example": 100
+					},
+					"openingBalance": {
+						"type": "number",
+						"description": "Opening balance of a CD or an IRA account.",
+						"example": 100
+					},
+					"praAvailBalanceAmount": {
+						"type": "number",
+						"description": "Personal Reserve Account available balance amount.",
+						"example": 100
+					},
+					"praBalanceAmount": {
+						"type": "number",
+						"description": "Personal Reserve Account Balance Amount.",
+						"example": 100
+					},
+					"principalBalance": {
+						"type": "number",
+						"description": "Principal balance of the LOC, Loan, Mortgage account returned with Account Details.",
+						"example": 100
+					}
+				},
+				"description": "Balance Object"
+			},
+			"PaymentsObject": {
+				"type": "object",
+				"properties": {
+					"escrowPayment": {
+						"type": "string",
+						"description": "Remaining Escrow payment of a mortgage account.",
+						"example": "100.00"
+					},
+					"lastPaymentAmount": {
+						"type": "number",
+						"description": "The last amount paid to the Credit Card account.",
+						"example": 100
+					},
+					"minimumPaymentDue": {
+						"type": "number",
+						"description": "Minimum payment due for a Credit Card account",
+						"example": 100
+					},
+					"nextPaymentAmountDue": {
+						"type": "number",
+						"description": "Next payment amount due for LOC, Loan and mortgage account",
+						"example": 100
+					},
+					"pastDueAmount": {
+						"type": "number",
+						"description": "The amount past due for a Credit Card account",
+						"example": 100
+					},
+					"payDownAmount": {
+						"type": "number",
+						"description": "Pay down amount for an account",
+						"example": 100
+					},
+					"payDownAmountAsOf": {
+						"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+						"type": "string",
+						"description": "The date on which Pay down amount for an account is based",
+						"format": "date",
+						"example": "2022-06-22"
+					},
+					"paymentAmountDue": {
+						"type": "number",
+						"description": "Next Payment amount due for LOC, Loan and mortgage account.",
+						"example": 100
+					},
+					"principalPaymentDue": {
+						"type": "number",
+						"description": "The upcoming payment due specifically for paying down the principal loan amount (not interest).",
+						"example": 100
+					},
+					"priorYearEscrowPaid": {
+						"type": "number",
+						"description": "Prior year's Escrow paid for a mortgage",
+						"example": 100
+					},
+					"priorYearTaxesPaid": {
+						"type": "number",
+						"description": "Prior year's taxes paid for a mortgage",
+						"example": 100
+					},
+					"priorYearInterestAmount": {
+						"type": "number",
+						"description": "Prior year interest of an interest bearing Deposit account",
+						"example": 100
+					},
+					"priorYearInterestPaid": {
+						"type": "number",
+						"description": "Interest Paid Last Year",
+						"example": 100
+					},
+					"principalInterestPayment": {
+						"type": "number",
+						"description": "Interest Paid Last Year",
+						"example": 100
+					},
+					"regularPayment": {
+						"type": "number",
+						"description": "Regular amount of the loan and mortgage",
+						"example": 100
+					},
+					"remainingPayments": {
+						"type": "number",
+						"description": "Number of remaining payments",
+						"example": 100
+					},
+					"totalAmountDue": {
+						"type": "number",
+						"description": "Total Amount due for LOC, Loan and mortage account",
+						"example": 100
+					}
+				},
+				"description": "Payments Object"
+			},
+			"OtherDetailsObject": {
+				"type": "object",
+				"properties": {
+					"accountBillIndicator": {
+						"type": "boolean",
+						"description": "Indentifies if Bill is only for an account and not an individual",
+						"example": true
+					},
+					"alertsFlag": {
+						"type": "boolean",
+						"description": "Indicates if the account is Alert Eligible",
+						"example": false
+					},
+					"currentProcessingDate": {
+						"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+						"type": "string",
+						"description": "The Current Processing Date",
+						"format": "date",
+						"example": "2022-06-22"
+					},
+					"currentCashApr": {
+						"type": "number",
+						"description": "Current cash APR of the credit card account",
+						"example": 100
+					},
+					"currentPurchaseApr": {
+						"type": "number",
+						"description": "Current purchase APR of the credit card account",
+						"example": 100
+					},
+					"escrowFlag": {
+						"type": "boolean",
+						"description": "Indicates if the account has escrow or now",
+						"example": true
+					},
+					"externalAcctNumber": {
+						"type": "string",
+						"description": "External Misc account number required for external transfers",
+						"example": "729812931931"
+					},
+					"hasCard": {
+						"type": "boolean",
+						"description": "Indicates if the account has a debit or atm card",
+						"example": false
+					},
+					"interestAccrued": {
+						"type": "number",
+						"description": "Interest Accrued",
+						"example": 100
+					},
+					"interestRate": {
+						"type": "number",
+						"description": "The interest rate of an interest-bearing Deposit account, Loan, LOC, or Mortgage Account",
+						"example": 209.16
+					},
+					"lastPaymentDate": {
+						"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+						"type": "string",
+						"description": "The date when the last payment was made to the LOC/Loan account",
+						"format": "date",
+						"example": "2022-06-22"
+					},
+					"lastRenewedDate": {
+						"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+						"type": "string",
+						"description": "Last Renewed date",
+						"format": "date",
+						"example": "2022-06-22"
+					},
+					"lastStatementAPYEarned": {
+						"type": "number",
+						"description": "The annual Percentage Yield Earned on the last statement",
+						"example": 100
+					},
+					"lastStatementDate": {
+						"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+						"type": "string",
+						"description": "The last statement date of an account",
+						"format": "date",
+						"example": "2022-06-22"
+					},
+					"lateChargeDue": {
+						"type": "number",
+						"description": "Late charges due for LOC, Loan and mortage account",
+						"example": 234
+					},
+					"maturityDate": {
+						"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+						"type": "string",
+						"description": "Maturity date of a Deposit CD, Deposit IRA, a LOC, Loan or a Mortgage account",
+						"format": "date",
+						"example": "2022-06-22"
+					},
+					"nextPaymentDueDate": {
+						"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+						"type": "string",
+						"description": "Next payment amount due for LOC, Loan and mortgage account",
+						"format": "date",
+						"example": "2022-06-22"
+					},
+					"noticeDeliveryType": {
+						"type": "string",
+						"description": "Indicates whether electronic or paper statements are being produced.",
+						"example": "Email"
+					},
+					"numberDaysPastDue": {
+						"type": "integer",
+						"description": "The number of days an account is past due",
+						"example": 25
+					},
+					"originalLoanAmount": {
+						"type": "number",
+						"description": "Original amount of the loan and mortgage",
+						"example": 234
+					},
+					"ownershipType": {
+						"type": "string",
+						"description": "Describes the account holder's ownership.",
+						"example": "Sole owner"
+					},
+					"paymentDueDate": {
+						"pattern": "[0-9]{4}[0-9]{2}[0-9]{2}",
+						"type": "string",
+						"description": "Payment due date for an Overdraft, Line of Credit or Credit Card account",
+						"format": "date",
+						"example": "2022-06-22"
+					},
+					"praIndicator": {
+						"type": "boolean",
+						"description": "Indicates if the account has Personal Reserve Account support",
+						"example": false
+					},
+					"praCreditLine": {
+						"type": "number",
+						"description": "Personal Reserve Account credit line",
+						"example": 234
+					},
+					"primaryFlag": {
+						"type": "boolean",
+						"description": "Indicates if the account is a Primary",
+						"example": false
+					},
+					"term": {
+						"type": "string",
+						"description": "Term of a CD or an IRA account",
+						"example": "202term"
+					},
+					"totalPastDue": {
+						"type": "number",
+						"description": "Total Past amount due for LOC, Loan and mortgage account",
+						"example": 234
+					},
+					"transferEligibility": {
+						"type": "string",
+						"description": "Indicates whether a Deposit or Loan account is eligible to be displayed in the transfer drop-down lists.",
+						"example": "Deposit account"
+					},
+					"yearToDateInterestAmount": {
+						"type": "string",
+						"description": "Year to date's interest of an interest bearing Deposit account, including CD and IRA",
+						"example": "1000.00"
+					},
+					"yearToDateInterestPaid": {
+						"type": "number",
+						"description": "Year to date's interest paid on LOC, Loan and Mortgage",
+						"example": 234
+					},
+					"yearToDatePrincipalInterestPaid": {
+						"type": "number",
+						"description": "Year to date's Principal and Interest paid for a mortgage",
+						"example": 234
+					},
+					"yearToDateTaxesPaid": {
+						"type": "number",
+						"description": "Year to date taxes paid for a mortgage",
+						"example": 234
+					},
+					"lastCreditAmount": {
+						"type": "string",
+						"description": "Last credit amount for a loan",
+						"example": "1000.00"
+					},
+					"pastDueDate": {
+						"pattern": "[0-9]{4}[0-9]{2}[0-9]{2}",
+						"type": "string",
+						"description": "Past due date for a loan",
+						"format": "date",
+						"example": "2022-06-22"
+					},
+					"accountBranch": {
+						"type": "string",
+						"description": "Account branch",
+						"example": "New Jersey"
+					},
+					"accountPrimaryOfficer": {
+						"type": "string",
+						"description": "Account officer",
+						"example": "Gibson"
+					},
+					"specialInstructionsIndicator": {
+						"type": "string",
+						"description": "Special Instructions Ind",
+						"example": "true"
+					},
+					"openIndicator": {
+						"type": "string",
+						"description": "Closed Reason",
+						"example": "New Jersey"
+					},
+					"lastContactDate": {
+						"pattern": "[0-9]{4}[0-9]{2}[0-9]{2}",
+						"type": "string",
+						"description": "Last Customer Contact Date",
+						"format": "date",
+						"example": "2022-06-22"
+					},
+					"lastMaintenanceDate": {
+						"pattern": "[0-9]{4}[0-9]{2}[0-9]{2}",
+						"type": "string",
+						"description": "Last Maintenance Date",
+						"format": "date",
+						"example": "2022-06-22"
+					},
+					"lastOverdraftDate": {
+						"pattern": "[0-9]{4}[0-9]{2}[0-9]{2}",
+						"type": "string",
+						"description": "Last OD Date",
+						"format": "date",
+						"example": "2022-06-22"
+					},
+					"numberTimesOverdrawn": {
+						"type": "string",
+						"description": "No of Overdrafts",
+						"example": "5"
+					},
+					"combinedStatementIndicator": {
+						"type": "string",
+						"description": "Combined Statements Ind",
+						"example": "true"
+					},
+					"netMemoPostAmount": {
+						"type": "number",
+						"description": "Net Memo Post",
+						"example": 100
+					},
+					"collectedBalance": {
+						"type": "number",
+						"description": "Collected Balance",
+						"example": 100
+					},
+					"totalFloatAmount": {
+						"type": "number",
+						"description": "Account Floats",
+						"example": 100
+					},
+					"cashAvailableLineAmount": {
+						"type": "number",
+						"description": "Cash Line Available",
+						"example": 100
+					},
+					"yearToDateAverageBalance": {
+						"type": "number",
+						"description": "Year To Date Average Balance",
+						"example": 100
+					},
+					"nextStatementDate": {
+						"pattern": "[0-9]{4}[0-9]{2}[0-9]{2}",
+						"type": "string",
+						"description": "Next Statement Date",
+						"format": "date",
+						"example": "2022-04-10"
+					},
+					"interestPaymentMethod": {
+						"type": "string",
+						"description": "Certificate Of Deposit Disposition Method",
+						"example": "Cheque Payment"
+					},
+					"interestFrequency": {
+						"type": "string",
+						"description": "Certificate Of Deposit Frequency",
+						"example": "true"
+					},
+					"graceDaysRemaining": {
+						"type": "string",
+						"description": "Certificate Of Deposit In Grace Period",
+						"example": "10"
+					},
+					"renewalAPY": {
+						"type": "string",
+						"description": "Renewal of Annual Percentage Yield",
+						"example": "Gibson"
+					},
+					"termIndicator": {
+						"type": "string",
+						"description": "Certificate Of Deposit Term Indicator",
+						"example": "true"
+					},
+					"loanTerm": {
+						"type": "string",
+						"description": "Loan Term",
+						"example": "New Jersey"
+					},
+					"loanCategory": {
+						"type": "string",
+						"description": "Loan Category",
+						"example": "Gibson"
+					},
+					"payoffAmount": {
+						"type": "number",
+						"description": "Loan Pay off Balance Good",
+						"example": 209.78
+					},
+					"primaryStatementAccount": {
+						"type": "string",
+						"description": "Primary Account Number, Only fill if the combinedStatementIndicator is Secondary",
+						"example": "2127184"
+					},
+					"issuedDate": {
+						"pattern": "[0-9]{4}[0-9]{2}[0-9]{2}",
+						"type": "string",
+						"description": "Loan Issue Date",
+						"format": "date",
+						"example": "2022-07-20"
+					},
+					"retirementPlanNumber": {
+						"type": "string",
+						"description": "The number that identifies the customer's retirement plan",
+						"example": "8372648"
+					},
+					"retirementPlanType": {
+						"type": "string",
+						"description": "Value that identifies retirement plan type",
+						"example": "10"
+					},
+					"sendBillIndicator": {
+						"type": "string",
+						"description": "Billing notification indicator for loan accounts",
+						"example": "true"
+					},
+					"statementType": {
+						"type": "string",
+						"description": "Indicates whether electronic or paper statements are being produced.",
+						"example": "Mail"
+					},
+					"status": {
+						"type": "string",
+						"description": "The status of the account that will give indication of a good standing, inactive, closed and so on",
+						"example": "active"
+					},
+					"cardStatus": {
+						"type": "string",
+						"description": "Card status as returned by code connect",
+						"example": "Active"
+					},
+					"cardPrimaryDDANumber": {
+						"type": "string",
+						"description": "Primary DDA associated with the debit card.",
+						"example": "43000245667"
+					},
+					"cardPrimaryCustomerId": {
+						"type": "string",
+						"description": "Customer ID associated with the debit card.",
+						"example": "Gibson"
+					},
+					"cardType": {
+						"type": "string",
+						"description": "Card type as returned from code connect.",
+						"example": "Debit"
+					},
+					"cardForeignAddressIndicator": {
+						"type": "string",
+						"description": "Card foreign address indicator as returned by code connect.",
+						"example": "2127184"
+					},
+					"healthSavingsAcctIndicator": {
+						"type": "boolean",
+						"description": "Health savings account indicator for deposit accounts.",
+						"example": false
+					},
+					"loanDrawIndicator": {
+						"type": "string",
+						"description": "Commitment draw indicator for loan accounts.",
+						"example": "8372648"
+					},
+					"loanExpirationDate": {
+						"pattern": "[0-9]{4}[0-9]{2}[0-9]{2}",
+						"type": "string",
+						"description": "Commitment expiration date for loan accounts.",
+						"format": "date",
+						"example": "2022-09-20"
+					},
+					"initialFundingDate": {
+						"pattern": "[0-9]{4}[0-9]{2}[0-9]{2}",
+						"type": "string",
+						"description": "The date of first credit transaction posted to an account.",
+						"format": "date",
+						"example": "2021-09-20"
+					},
+					"annualPercentageYield": {
+						"type": "number",
+						"description": "Effective yield of time deposit.",
+						"example": 23.56
+					},
+					"annualPercentageRate": {
+						"type": "string",
+						"description": "Annual Percentage Rate.",
+						"example": "10"
+					},
+					"withdrawalPenalty": {
+						"type": "number",
+						"description": "Amount of penalty assessed on withdrawal before maturity.",
+						"example": 100.23
+					},
+					"collateralDescription": {
+						"type": "string",
+						"description": "User-defined description of collateral supporting the loan.",
+						"example": "43000245667"
+					},
+					"closedDate": {
+						"pattern": "[0-9]{4}[0-9]{2}[0-9]{2}",
+						"type": "string",
+						"description": "Date account was closed or reached a zero balance.",
+						"format": "date",
+						"example": "2022-04-08"
+					},
+					"loanNoteType": {
+						"type": "string",
+						"description": "Identifies a set of note options and defaults.",
+						"example": "100.23"
+					},
+					"paidOffDailyAccrualAmount": {
+						"type": "number",
+						"description": "Amount of Accrued interest paid off",
+						"example": 100.87
+					},
+					"sinceDate": {
+						"maxLength": 10,
+						"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+						"type": "string",
+						"description": "The account open date for Loans",
+						"format": "date",
+						"example": "2022-04-08"
+					},
+					"cycleDates": {
+						"type": "array",
+						"description": "Credit card billing cycle dates",
+						"items": {
+							"maxLength": 10,
+							"pattern": "[0-9]{4}-[0-9]{2}-[0-9]{2}",
+							"type": "string",
+							"format": "date",
+							"example": "2022-04-08"
+						}
+					}
+				},
+				"description": "OtherDetailsObject"
+			},
+			"400ErrorResponse": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"maxLength": 100,
+						"type": "string",
+						"description": "Type of the Problem",
+						"nullable": true,
+						"example": "urn:fisglobal:api:error:invalid-request"
+					},
+					"title": {
+						"maxLength": 100,
+						"type": "string",
+						"description": "Title of the Problem",
+						"nullable": true,
+						"example": "server-side validation failed"
+					},
+					"details": {
+						"type": "array",
+						"description": "Problem detail.. This should contain Message and error code",
+						"nullable": true,
+						"items": {
+							"$ref": "#/components/schemas/400ErrorResponseDetails"
+						}
+					}
+				},
+				"additionalProperties": false,
+				"description": "Problem Response Object"
+			},
+			"400ErrorResponseDetails": {
+				"type": "object",
+				"properties": {
+					"code": {
+						"maxLength": 100,
+						"type": "string",
+						"description": "Validation Error Code",
+						"nullable": true,
+						"example": "DBAAS-05013"
+					},
+					"message": {
+						"maxLength": 500,
+						"type": "string",
+						"description": "Validation Error Message",
+						"nullable": true,
+						"example": "The userInternalId field is required."
+					},
+					"field": {
+						"maxLength": 100,
+						"type": "string",
+						"description": "Validation Error Field",
+						"nullable": true,
+						"example": "userInternalId"
+					}
+				},
+				"additionalProperties": false,
+				"description": "Validator error, which will be returned in the response body for any error."
+			},
+			"422ErrorResponse": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"maxLength": 100,
+						"type": "string",
+						"description": "Type of the Problem",
+						"nullable": true,
+						"example": "exampletype"
+					},
+					"title": {
+						"maxLength": 100,
+						"type": "string",
+						"description": "Title of the Problem",
+						"nullable": true,
+						"example": "urn:fisglobal:api:error:invalid-request"
+					},
+					"details": {
+						"type": "array",
+						"description": "Problem detail.. This should contain Message and error code",
+						"nullable": true,
+						"items": {
+							"$ref": "#/components/schemas/422ErrorResponseDetails"
+						}
+					}
+				},
+				"additionalProperties": false,
+				"description": "Problem Response Object"
+			},
+			"422ErrorResponseDetails": {
+				"type": "object",
+				"properties": {
+					"code": {
+						"maxLength": 100,
+						"type": "string",
+						"description": "Validation Error Code",
+						"nullable": true,
+						"example": "DBAAS-41008"
+					},
+					"message": {
+						"maxLength": 500,
+						"type": "string",
+						"description": "Validation Error Message",
+						"nullable": true,
+						"example": "Entitlement already exists for this user and account"
+					},
+					"field": {
+						"maxLength": 100,
+						"type": "string",
+						"description": "Validation Error Field",
+						"nullable": true,
+						"example": "IssueEntitlementsData"
+					}
+				},
+				"additionalProperties": false,
+				"description": "Validator error, which will be returned in the response body for any error."
+			},
+			"500ErrorResponse": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"maxLength": 100,
+						"type": "string",
+						"description": "Type of the Problem",
+						"nullable": true,
+						"example": "urn:fisglobal:api:error:invalid-request"
+					},
+					"title": {
+						"maxLength": 100,
+						"type": "string",
+						"description": "Title of the Problem",
+						"nullable": true,
+						"example": "Internal Server Error"
+					},
+					"details": {
+						"type": "array",
+						"description": "Problem detail.. This should contain Message and error code",
+						"nullable": true,
+						"items": {
+							"$ref": "#/components/schemas/500ErrorResponseDetails"
+						}
+					}
+				},
+				"additionalProperties": false,
+				"description": "Problem Response Object"
+			},
+			"500ErrorResponseDetails": {
+				"type": "object",
+				"properties": {
+					"code": {
+						"maxLength": 100,
+						"type": "string",
+						"description": "Validation Error Code",
+						"nullable": true,
+						"example": "DBAAS-80001"
+					},
+					"message": {
+						"maxLength": 500,
+						"type": "string",
+						"description": "Validation Error Message",
+						"nullable": true,
+						"example": "Internal Server Error"
+					}
+				},
+				"additionalProperties": false,
+				"description": "Validator error, which will be returned in the response body for any error."
+			},
+			"504ErrorResponse": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"maxLength": 100,
+						"type": "string",
+						"description": "Type of the Problem",
+						"nullable": true,
+						"example": "urn:fisglobal:api:error:invalid-request"
+					},
+					"title": {
+						"maxLength": 100,
+						"type": "string",
+						"description": "Title of the Problem",
+						"nullable": true,
+						"example": "Timeout Error"
+					},
+					"details": {
+						"type": "array",
+						"description": "Problem detail.. This should contain Message and error code",
+						"nullable": true,
+						"items": {
+							"$ref": "#/components/schemas/504ErrorResponseDetails"
+						}
+					}
+				},
+				"additionalProperties": false,
+				"description": "Problem Response Object"
+			},
+			"504ErrorResponseDetails": {
+				"type": "object",
+				"properties": {
+					"code": {
+						"maxLength": 100,
+						"type": "string",
+						"description": "Validation Error Code",
+						"nullable": true,
+						"example": "DBAAS-80001"
+					},
+					"message": {
+						"maxLength": 500,
+						"type": "string",
+						"description": "Validation Error Message",
+						"nullable": true,
+						"example": "Timeout"
+					}
+				},
+				"additionalProperties": false,
+				"description": "Validator error, which will be returned in the response body for any error."
+			}
+		},
+		"parameters": {
+			"uuid": {
+				"name": "uuid",
+				"in": "header",
+				"description": "Unique request identifier (generated by channelServices server if not provided)",
+				"required": true,
+				"style": "simple",
+				"explode": false,
+				"schema": {
+					"maxLength": 36,
+					"minLength": 36,
+					"pattern": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
+					"type": "string",
+					"format": "uuid"
+				},
+				"example": "11aadd22-22c1-4567-b1c2-4a567890b001"
+			},
+			"channel": {
+				"name": "channel",
+				"in": "header",
+				"description": "FIS processing Application, used to identify the application executing the endpoint.  ",
+				"required": false,
+				"style": "simple",
+				"explode": false,
+				"schema": {
+					"type": "string"
+				},
+				"example": "D1B"
+			},
+			"organization-id": {
+				"name": "organization-id",
+				"in": "header",
+				"description": "Used to identify the application executing the endpoint",
+				"required": true,
+				"style": "simple",
+				"explode": false,
+				"schema": {
+					"type": "string"
+				},
+				"example": "D1CONSUMER-547"
+			},
+			"accessType": {
+				"name": "accessType",
+				"in": "query",
+				"description": "Indicator to specify if the requester is a consumer/banker/warehouse. Default will be bANKER ",
+				"required": false,
+				"style": "form",
+				"explode": true,
+				"schema": {
+					"type": "string",
+					"enum": [
+						"consumer",
+						"banker",
+						"warehouse"
+					]
+				},
+				"example": "consumer"
+			},
+			"includeDebitCards": {
+				"name": "includeDebitCards",
+				"in": "query",
+				"description": "Indicator to specify if the response should contain debit cards",
+				"required": false,
+				"style": "form",
+				"explode": true,
+				"schema": {
+					"type": "boolean"
+				},
+				"example": true
+			},
+			"customerId": {
+				"name": "customerId",
+				"in": "path",
+				"description": "Customer Identifier",
+				"required": true,
+				"style": "simple",
+				"explode": false,
+				"schema": {
+					"type": "string"
+				},
+				"example": "888222555_XACCT_152496"
+			},
+			"accountTypes": {
+				"name": "accountTypes",
+				"in": "query",
+				"description": "Type of Accounts to be return",
+				"required": false,
+				"style": "form",
+				"explode": true,
+				"schema": {
+					"type": "string",
+					"enum": [
+						"Internal",
+						"External",
+						"Both"
+					]
+				},
+				"example": "Internal"
+			},
+			"isSummary": {
+				"name": "isSummary",
+				"in": "query",
+				"description": "Indicator to specify if the requester just needs accounts summary",
+				"required": true,
+				"style": "form",
+				"explode": true,
+				"schema": {
+					"type": "boolean"
+				},
+				"example": true
+			}
+		},
+		"headers": {
+			"uuid": {
+				"description": "Unique request identifier (generated by channelServices server if not provided)",
+				"style": "simple",
+				"explode": false,
+				"schema": {
+					"maxLength": 36,
+					"minLength": 36,
+					"pattern": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
+					"type": "string"
+				},
+				"example": "11aadd22-22c1-4567-b1c2-4a567890b001"
+			}
+		},
+		"securitySchemes": {
+			"Authorization": {
+				"type": "apiKey",
+				"name": "Authorization",
+				"in": "header"
+			},
+			"default": {
+				"type": "oauth2",
+				"flows": {
+					"implicit": {
+						"authorizationUrl": "https://test.com",
+						"scopes": {}
+					}
+				}
+			}
+		}
+	}
+}
